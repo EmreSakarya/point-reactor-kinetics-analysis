@@ -1,32 +1,18 @@
-# Point Reactor Kinetics Analysis ⚛️
+# Point Reactor Kinetics Solver ⚛️
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat&logo=python&logoColor=white)
-![Scientific Computing](https://img.shields.io/badge/Scientific%20Computing-NumPy%20%7C%20SciPy-orange)
-![License](https://img.shields.io/badge/License-MIT-green)
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge&logo=python)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)
 
-This project investigates the **time-dependent behavior of a nuclear reactor** using the **point reactor kinetics equations** with a **single group of delayed neutrons**.
+## 📌 Overview
+This repository contains a numerical simulation framework for solving **Point Reactor Kinetics Equations (PKE)** with one group of delayed neutrons. The project was developed as part of the **NEM 394** course to analyze the transient behavior of nuclear reactors under various reactivity insertion scenarios (step, ramp, etc.).
 
-The system is solved using both **analytical** and **numerical methods** (RK4, Heun) to study **reactor transients, numerical accuracy, stiffness, and error propagation** under piecewise-constant reactivity insertions.
-
----
-
-## 📊 Simulation Results
-![Reactor Transient Response](simulation_result.png)
-*Figure 1: Comparison of Neutron Density response under step reactivity changes (Positive -> Negative -> Zero).*
+The solver implements high-precision numerical integration methods (**Runge-Kutta 4th Order**) and benchmarks them against analytical solutions to evaluate error propagation and stability in stiff systems.
 
 ---
 
-## 🎯 Objectives
-- **Model** the reactor dynamics using coupled differential equations (Neutrons & Precursors).
-- **Implement** numerical solvers (RK4 & Heun) from scratch.
-- **Analyze** the "Stiffness" of the system ($\Lambda$ vs $\lambda$ time scales).
-- **Validate** stability limits of explicit methods against Analytical Benchmark.
-
----
-
-## 🔬 Physical Model (Point Kinetics)
-
-The governing coupled differential equations derived in the report:
+## ⚙️ Mathematical Model
+The code solves the coupled system of stiff ordinary differential equations (ODEs) representing the neutron density ($n$) and precursor concentration ($C$):
 
 $$
 \frac{dn(t)}{dt} = \frac{\rho(t) - \beta}{\Lambda} n(t) + \lambda C(t)
@@ -36,26 +22,52 @@ $$
 \frac{dC(t)}{dt} = \frac{\beta}{\Lambda} n(t) - \lambda C(t)
 $$
 
-**Parameters:**
-- $\beta = 0.007$ (Delayed Neutron Fraction)
-- $\Lambda = 10^{-3} s$ (Generation Time)
-- $\lambda = 0.08 s^{-1}$ (Decay Constant)
+Where:
+* $\rho(t)$: Reactivity insertion
+* $\beta$: Delayed neutron fraction
+* $\Lambda$: Neutron generation time
+* $\lambda$: Precursor decay constant
 
 ---
 
-## 📁 Repository Structure
+## 🧮 Numerical Methods Implemented
 
-The project uses a modular architecture for scalability:
+The project explicitly compares two numerical integration schemes against the exact analytical solution (Eigenvalue/Eigenvector method):
 
-```text
-point-reactor-kinetics-analysis/
-│
-├── src/
-│   ├── config.py       # Physical constants & Reactivity scenario parameters
-│   ├── model.py        # Implementation of Point Kinetics differential equations
-│   └── solvers.py      # Numerical algorithms (RK4, Heun)
-│
-├── main.py             # Main execution script (Simulation & Visualization)
-├── Pointkinetic.pdf    # Full Project Report & Analytical Derivation
-├── requirements.txt    # Python dependencies
-└── README.md           # Project documentation
+1.  **Runge-Kutta 4th Order (RK4):**
+    * Primary solver used for high-precision results.
+    * Demonstrated global truncation error of $O(h^4)$.
+    * Highly stable for standard transient analysis.
+
+2.  **Heun’s Method (Predictor-Corrector):**
+    * Implemented to demonstrate the Euler-based prediction logic.
+    * Used for error comparison analysis against RK4.
+
+### 📉 Stiffness Analysis
+The project also investigates the **Stiffness Ratio** of the system. It demonstrates that for large reactivity insertions, the system becomes "stiff" due to the large difference between the prompt neutron lifetime and the precursor mean lifetime. The solver's time-step ($\Delta t$) sensitivity was analyzed to prevent numerical instability.
+
+---
+
+## 🚀 Key Results & Visualizations
+
+*(Place your simulation plots here. Example: Neutron Density vs Time)*
+
+### 1. Transient Response (Step Insertion)
+The comparison between Analytical, RK4, and Heun methods shows excellent agreement for small $\Delta t$.
+
+![Neutron Density Plot](relative_path_to_your_plot_image.png)
+*(Example: Response to 0.003 $\delta k/k$ step input)*
+
+### 2. Error Analysis
+Comparison of relative error between numerical approximations and the exact analytical solution.
+
+![Error Analysis](relative_path_to_your_error_plot.png)
+
+---
+
+## 💻 Installation & Usage
+
+### Dependencies
+The simulation relies on standard scientific Python libraries:
+```bash
+pip install numpy matplotlib scipy
