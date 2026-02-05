@@ -1,122 +1,90 @@
+# Point Reactor Kinetics Simulation
+
+**Course:** NEM 394 - Engineering Project II  
+**Department:** Nuclear Engineering, Hacettepe University  
+**Author:** Emre Sakarya
+
+## 📌 Project Overview
+
+This project simulates the time-dependent behavior of a nuclear reactor using the **Point Reactor Kinetics Equations** with a **single-group delayed neutron** approximation. The study investigates the reactor's response to piecewise constant reactivity changes (positive and negative steps).
+
+The simulation implements three different solution methods to compare numerical accuracy, stability, and error propagation:
+1.  **Analytical Solution:** Using matrix eigenvalues and eigenvectors (Reference solution).
+2.  **Heun's Method:** Euler Predictor-Corrector (2nd order accuracy).
+3.  **Runge-Kutta 4 (RK4):** 4th order numerical integration (high precision).
+
+Additionally, the project analyzes the **stiffness** of the system, demonstrating the significant time-scale difference between neutron density changes and precursor concentration changes.
+
+## ⚙️ Mathematical Model
+
+The dynamics of the reactor are modeled using the following system of differential equations:
+
+$$
+\frac{dn(t)}{dt} = \left( \frac{\rho(t) - \beta}{\Lambda} \right) n(t) + \lambda C(t)
+$$
+
+$$
+\frac{dC(t)}{dt} = \frac{\beta}{\Lambda} n(t) - \lambda C(t)
+$$
+
+### Parameters
+* **$\beta$ (Delayed neutron fraction):** 0.007
+* **$\Lambda$ (Neutron generation time):** $10^{-3}$ s
+* **$\lambda$ (Decay constant):** $0.08$ s⁻¹
+* **Initial Condition:** Equilibrium at $n_0 = 10.0$
+
+### Reactivity Scenario ($\rho(t)$)
+The system undergoes a positive reactivity step followed by a negative step:
+* **0 s $\le t <$ 10 s:** $\rho = 0.05 \beta$ (Positive Step)
+* **10 s $\le t <$ 20 s:** $\rho = -0.05 \beta$ (Negative Step)
+* **$t \ge$ 20 s:** $\rho = 0$ (Return to zero)
+
+## 📂 Repository Structure
+
+```text
+.
+├── src/                                # Source code for solver algorithms (Heun, RK4, Analytical)
+├── Point_Reactor_Kinetics_Report.pdf   # Full academic report with derivations and analysis
+├── README.md                           # Project documentation
+├── main.py                             # Main execution script for the simulation
+├── requirements.txt                    # Python dependencies
+└── simulation_result.png               # Output graph of the simulation
+```
+
+## 🚀 Installation & Usage
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/EmreSakarya/Point-Reactor-Kinetics.git
+    cd Point-Reactor-Kinetics
+    ```
+
+2.  **Install dependencies:**
+    It is recommended to use a virtual environment.
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3.  **Run the simulation:**
+    ```bash
+    python main.py
+    ```
+
+## 📊 Key Results
+
+* **Accuracy:** The RK4 method proved to be significantly more accurate than Heun's method. At a time step of $h=0.01s$, RK4 reduced the absolute error to the order of $10^{-8}$, whereas Heun's error was around $10^{-3}$.
+* **Stiffness Analysis:** The system is identified as "stiff" with a stiffness ratio (eigenvalue ratio) of approximately **1620**.
+* **Dynamics:** Neutron density ($n(t)$) responds almost instantaneously to reactivity changes (approx. 143 times faster rate of change), while precursor concentration ($C(t)$) acts as a stabilizing "inertia" with a delayed response.
+
+![Simulation Results](simulation_result.png)
+*(Figure: Comparison of Neutron Density and Precursor Concentration over time)*
+
+## 📚 References
+
+This project references standard nuclear engineering texts found in the report:
+* *Lamarsh, J. R., & Baratta, A. J.* - Introduction to Nuclear Engineering
+* *Hetrick, D. L.* - Dynamics of Nuclear Reactors
+* *Stacey, W. M.* - Nuclear Reactor Physics
 
 ---
-
-## Governing Equations
-
-The point reactor kinetics equations with one delayed neutron group are given by:
-
-dn(t)/dt = ((ρ(t) − β) / Λ) n(t) + λ C(t)
-
-dC(t)/dt = (β / Λ) n(t) − λ C(t)
-
-Where:
-- n(t) is the neutron density
-- C(t) is the delayed neutron precursor concentration
-- ρ(t) is the reactivity
-- β is the delayed neutron fraction
-- Λ is the neutron generation time
-- λ is the precursor decay constant
-
----
-
-## Model Parameters
-
-β = 0.007  
-λ = 0.08 s⁻¹  
-Λ = 1×10⁻³ s  
-Initial neutron density n₀ = 10.0  
-
-Initial equilibrium condition:
-
-C(0) = β n₀ / (Λ λ)
-
----
-
-## Reactivity Function
-
-The applied reactivity is piecewise constant:
-
-ρ(t) = 0.05β , 0 ≤ t < 10 s  
-ρ(t) = −0.05β , 10 ≤ t < 20 s  
-ρ(t) = 0 , t ≥ 20 s  
-
-This reactivity scenario enables observation of prompt neutron response, delayed neutron smoothing effects, and the return to steady-state conditions.
-
----
-
-## Solution Methods
-
-### Analytical Solution
-The system of equations is expressed in matrix form and solved analytically using eigenvalues and eigenvectors. Solutions are computed separately for each reactivity interval and matched using continuity conditions. The analytical solution serves as a reference for numerical error analysis.
-
-### Heun Method (Euler Predictor–Corrector)
-The Heun method is a second-order numerical integration technique. A predictor step is first computed using the forward Euler method, followed by a corrector step using the trapezoidal rule. Simulations are performed with multiple time step sizes to investigate convergence and error behavior.
-
-### Runge–Kutta Method (RK4)
-The fourth-order Runge–Kutta method provides higher accuracy and improved stability, particularly for stiff systems. Results show significantly smaller numerical errors compared to the Heun method for the same time step size.
-
----
-
-## Error Analysis
-
-Numerical solutions are compared against the analytical solution using absolute and relative error metrics:
-
-Absolute error:
-|n_num(t) − n_exact(t)|
-
-Relative error:
-|n_num(t) − n_exact(t)| / |n_exact(t)|
-
-Results demonstrate that decreasing the time step reduces numerical error and that the RK4 method converges much faster than the Heun method.
-
----
-
-## Physical Interpretation
-
-Neutron density exhibits rapid and sharp changes in response to reactivity insertions, while delayed neutron precursor concentration evolves more smoothly and slowly. This behavior is caused by the large difference in characteristic time scales between neutron production and precursor decay.
-
-Eigenvalue analysis reveals a stiffness ratio of approximately 1600, confirming that the system of equations is stiff and requires carefully selected numerical methods for accurate simulation.
-
----
-
-## How to Run
-
-1. Install dependencies:
-pip install -r requirements.txt
-
-2. Run the simulation:
-python main.py
-
-The script computes analytical and numerical solutions, performs error analysis, and generates plots of neutron density, precursor concentration, and error propagation.
-
----
-
-## Report
-
-A detailed academic report including mathematical derivations, numerical results, error analysis, and physical interpretation is provided in:
-
-Point_Reactor_Kinetics_Report.pdf
-
----
-
-## References
-
-Duderstadt, J. J., & Hamilton, L. J. – Nuclear Reactor Analysis  
-Lamarsh, J. R., & Baratta, A. J. – Introduction to Nuclear Engineering  
-Stacey, W. M. – Nuclear Reactor Physics  
-Chapra, S. C., & Canale, R. P. – Numerical Methods for Engineers  
-IAEA (2011) – Reactor Kinetics and Control
-
----
-
-## Author
-
-Emre Sakarya  
-Hacettepe University  
-Department of Nuclear Engineering  
-
----
-
-## License
-
-This project is intended for academic and educational purposes only.
+*Submitted as Assignment 4 for NEM 394.*
