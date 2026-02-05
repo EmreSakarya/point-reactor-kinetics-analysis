@@ -85,6 +85,3 @@ This project references standard nuclear engineering texts found in the report:
 * *Lamarsh, J. R., & Baratta, A. J.* - Introduction to Nuclear Engineering
 * *Hetrick, D. L.* - Dynamics of Nuclear Reactors
 * *Stacey, W. M.* - Nuclear Reactor Physics
-
----
-*Submitted as Assignment 4 for NEM 394.*
