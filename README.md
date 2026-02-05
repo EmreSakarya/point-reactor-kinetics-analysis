@@ -78,3 +78,4 @@ Based on the computational analysis reported in this project:
 **Date:** January 2026
 
 *This project is intended for academic and educational purposes.*
+*For detailed physics and derivations, please refer to the [Project Report](https://github.com/EmreSakarya/point-reactor-kinetics-analysis/blob/main/Point_Reactor_Kinetics_Report.pdf).*
