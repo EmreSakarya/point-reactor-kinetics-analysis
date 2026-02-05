@@ -1,21 +1,23 @@
-# Point Reactor Kinetics Simulation
+# Point Reactor Kinetics Analysis (One Group Delayed Neutrons)
 
-**Course:** NEM 394 - Engineering Project II  
-**Department:** Nuclear Engineering, Hacettepe University  
-**Author:** Emre Sakarya
+![Simulation Results](simulation_result.png)
 
-## 📌 Project Overview
+## About the Project
 
-This project simulates the time-dependent behavior of a nuclear reactor using the **Point Reactor Kinetics Equations** with a **single-group delayed neutron** approximation. The study investigates the reactor's response to piecewise constant reactivity changes (positive and negative steps).
+This project implements the **Point Reactor Kinetic Equations** using the **Single-Group Delayed Neutron** approximation. It was developed as part of the *NEM 394 - Engineering Project II* course at **Hacettepe University, Department of Nuclear Engineering**.
 
-The simulation implements three different solution methods to compare numerical accuracy, stability, and error propagation:
-1.  **Analytical Solution:** Using matrix eigenvalues and eigenvectors (Reference solution).
-2.  **Heun's Method:** Euler Predictor-Corrector (2nd order accuracy).
-3.  **Runge-Kutta 4 (RK4):** 4th order numerical integration (high precision).
+The primary objective is to analyze the reactor's time-dependent behavior under piecewise constant reactivity changes. The project compares the **exact analytical solution** against two numerical integration methods: **Heun's Method** (Predictor-Corrector) and the **Runge-Kutta 4th Order (RK4)** method. Additionally, it provides a mathematical proof of the system's "stiffness" by analyzing the time scale differences between neutron density and precursor concentration.
 
-Additionally, the project analyzes the **stiffness** of the system, demonstrating the significant time-scale difference between neutron density changes and precursor concentration changes.
+## Features
 
-## ⚙️ Mathematical Model
+* **Analytical Solution:** Exact solution of the differential equation system using matrix eigenvalue/eigenvector decomposition.
+* **Numerical Methods:**
+    * **Heun's Method:** Second-order accurate Euler predictor-corrector approach.
+    * **Runge-Kutta 4 (RK4):** Fourth-order accurate method for high-precision simulations.
+* **Error Analysis:** Calculation of absolute and relative errors for various time steps (h).
+* **Stiffness Analysis:** Mathematical demonstration of the stiff nature of the equations by comparing the time derivatives (dn/dt vs dC/dt) and system eigenvalues.
+
+## Mathematical Model
 
 The dynamics of the reactor are modeled using the following system of differential equations:
 
@@ -27,61 +29,53 @@ $$
 \frac{dC(t)}{dt} = \frac{\beta}{\Lambda} n(t) - \lambda C(t)
 $$
 
-### Parameters
-* **$\beta$ (Delayed neutron fraction):** 0.007
-* **$\Lambda$ (Neutron generation time):** $10^{-3}$ s
-* **$\lambda$ (Decay constant):** $0.08$ s⁻¹
-* **Initial Condition:** Equilibrium at $n_0 = 10.0$
+### Physical Parameters
+* **Beta (Delayed Neutron Fraction):** 0.007
+* **Lambda_decay (Decay Constant):** 0.08 1/s
+* **Lambda_gen (Neutron Generation Time):** 0.001 s
+* **n0 (Initial Neutron Density):** 10.0
 
-### Reactivity Scenario ($\rho(t)$)
-The system undergoes a positive reactivity step followed by a negative step:
-* **0 s $\le t <$ 10 s:** $\rho = 0.05 \beta$ (Positive Step)
-* **10 s $\le t <$ 20 s:** $\rho = -0.05 \beta$ (Negative Step)
-* **$t \ge$ 20 s:** $\rho = 0$ (Return to zero)
+### Reactivity Scenario
+The system is subjected to a step reactivity function:
+* **0 to 10 s:** Positive Step (0.05 * Beta)
+* **10 to 20 s:** Negative Step (-0.05 * Beta)
+* **20+ s:** Return to Equilibrium (0.0)
 
-## 📂 Repository Structure
+## Installation & Usage
 
-```text
-.
-├── src/                                # Source code for solver algorithms (Heun, RK4, Analytical)
-├── Point_Reactor_Kinetics_Report.pdf   # Full academic report with derivations and analysis
-├── README.md                           # Project documentation
-├── main.py                             # Main execution script for the simulation
-├── requirements.txt                    # Python dependencies
-└── simulation_result.png               # Output graph of the simulation
-```
+To run this simulation on your local machine, you need Python installed along with standard scientific computing libraries.
 
-## 🚀 Installation & Usage
+### Prerequisites
+* Python 3.x
+* NumPy
+* Matplotlib
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/EmreSakarya/Point-Reactor-Kinetics.git
-    cd Point-Reactor-Kinetics
-    ```
+### Setup
+Clone the repository and install the dependencies:
 
-2.  **Install dependencies:**
-    It is recommended to use a virtual environment.
-    ```bash
-    pip install -r requirements.txt
-    ```
+    git clone https://github.com/yourusername/point-reactor-kinetics.git
+    cd point-reactor-kinetics
+    pip install numpy matplotlib
 
-3.  **Run the simulation:**
-    ```bash
+### Running the Simulation
+Execute the main script to generate the data and plots:
+
     python main.py
-    ```
 
-## 📊 Key Results
+*(Note: Ensure your script filename matches the command above, e.g., if your file is named `project_code.py`, run that instead.)*
 
-* **Accuracy:** The RK4 method proved to be significantly more accurate than Heun's method. At a time step of $h=0.01s$, RK4 reduced the absolute error to the order of $10^{-8}$, whereas Heun's error was around $10^{-3}$.
-* **Stiffness Analysis:** The system is identified as "stiff" with a stiffness ratio (eigenvalue ratio) of approximately **1620**.
-* **Dynamics:** Neutron density ($n(t)$) responds almost instantaneously to reactivity changes (approx. 143 times faster rate of change), while precursor concentration ($C(t)$) acts as a stabilizing "inertia" with a delayed response.
+## Results & Discussion
 
-![Simulation Results](simulation_result.png)
-*(Figure: Comparison of Neutron Density and Precursor Concentration over time)*
+The analysis yielded the following key insights:
 
-## 📚 References
+1.  **Accuracy:** The RK4 method demonstrated significantly higher accuracy than Heun's method. At a time step of h=0.01s, RK4 errors were on the order of 1e-8, whereas Heun errors were around 1e-3.
+2.  **System Dynamics:** The neutron density n(t) responds instantly to reactivity steps (jumps), while the precursor concentration C(t) exhibits a delayed, smooth response due to the "inertia" effect.
+3.  **Stiffness:** The analysis proved the system is stiff. Immediately after a reactivity step, the rate of change for neutrons (dn/dt) was found to be approximately **143 times faster** than that of the precursors (dC/dt). The eigenvalue ratio of the system matrix was calculated to be approximately **1620**, confirming the need for stable numerical solvers or small time steps.
 
-This project references standard nuclear engineering texts found in the report:
-* *Lamarsh, J. R., & Baratta, A. J.* - Introduction to Nuclear Engineering
-* *Hetrick, D. L.* - Dynamics of Nuclear Reactors
-* *Stacey, W. M.* - Nuclear Reactor Physics
+## License & Contact
+
+**Developer:** Emre Sakarya
+**Institution:** Hacettepe University - Nuclear Engineering
+**Date:** January 2026
+
+This project is intended for educational and academic purposes.
