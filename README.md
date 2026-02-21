@@ -54,7 +54,7 @@ Ensure you have Python 3 installed along with these scientific libraries:
 **2. Clone and Run**
 Clone the repository and execute the main script:
 
-    git clone https://github.com/EmreSakarya/point-reactor-kinetics.git
+    git clone https://github.com/yourusername/point-reactor-kinetics.git
     cd point-reactor-kinetics
     python main.py
 
